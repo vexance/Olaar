@@ -1,8 +1,6 @@
 OhitskiLabs AWS Assume Role Script
 ----------------------------------
 
-[[_TOC_]]
-
 #### Description
 Cuts down on some AWS CLI role assumption annoyances by automatically setting the newly assumed role to the CLI's default profile within ~/.aws/credentials. Olaar's 'revert' command swaps the default AWS context back to the provided profile. Role assumption via Olaar supports an optional external id and uses the current AWS profile's account id to determine the assumed role ARN. Future implementation will allow for specified account ids, but please note that MFA is not supported if trust policies require supply an MFA device's serial number / arn and token.
 
