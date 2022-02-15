@@ -16,7 +16,8 @@ python3 olaar.py assume --role MyRoleToAssume
 ```bash
 # Assumes role to arn:aws:iam::{AccountId}:assumed-role/MyRoleThatRequiresExternalId/MyRoleThatRequiresExternalId-Session
 # And sets the aws_access_key, aws_secret_access_key, and aws_session_token in ~/.aws/credentials
-python3 olaar.py assume --role MyRoleThatRequiresExternalId --external-id MyExternalId
+python3 olaar.py assume --role MyRoleThatRequiresExternalId --external-id
+External Id >> 
 ```
 ```bash
 # Sets the default AWS profile to match what is specified for [MyStandardProfile] within ~/.aws/credentials
