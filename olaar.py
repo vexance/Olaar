@@ -1,4 +1,4 @@
-import argparse, boto3, os
+import argparse, boto3, getpass, os
 
 def assume_role(role: str, ext_id: str = None) -> dict:
     """Performs STS role assumption API call for a provided ARN within the user context account"""
@@ -57,7 +57,7 @@ def revert_default_profile(profile: str) -> None:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('olaar.py - OhitskiLabs AWS Assume Role script', usage='python3 olaar.py [assume|revert] [--role <role> [--external-id <id>] | --profile <name>]')
-    parser.add_argument('--external-id',required=False,default=None,help='External Id required for role assumption')
+    parser.add_argument('--external-id',required=False,action='store_true',default=False,help='Prompt for the external id required for role assumption')
     parser.add_argument('--role',required=False,default=None,help='Role to assume within the account')
     parser.add_argument('--profile',required=False,default=None,help='AWS profile to set as default')
     parser.add_argument('command',default=None,help='Command to run [assume|revert] (note: revert removes all aws_session_token entries')
@@ -68,7 +68,8 @@ if __name__ == '__main__':
         if not args.role:
             print(f'[x] Command \'assume\' requires a specified role arn (--role)')
             parser.print_usage()
-        creds = assume_role(args.role, args.external_id)
+        ext_id = getpass.getpass('External Id >> ') if (args.external_id) else None
+        creds = assume_role(args.role, ext_id)
         configure_default_profile(creds)
     elif (args.command == 'revert'):
         if not args.profile:
