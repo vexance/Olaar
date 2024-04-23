@@ -55,11 +55,23 @@ def revert_default_profile(profile: str) -> None:
 
     return None
 
+
+def print_env_variables(res: dict) -> None:
+    creds = res.get("Credentials", {})
+    arn = res.get("AssumedRoleUser", {}).get("Arn", "")
+    print(f'Credentials for assumed role: {arn}')
+    print(f'export AWS_ACCESS_KEY_ID={creds.get("AccessKeyId")}')
+    print(f'export AWS_SECRET_ACCESS_KEY={creds.get("SecretAccessKey")}')
+    print(f'export AWS_SESSION_TOKEN={creds.get("SessionToken")}')
+    return
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('olaar.py - OhitskiLabs AWS Assume Role script', usage='python3 olaar.py [assume|revert] [--role <role> [--external-id <id>] | --profile <name>]')
     parser.add_argument('--external-id',required=False,action='store_true',default=False,help='Prompt for the external id required for role assumption')
     parser.add_argument('--role',required=False,default=None,help='Role to assume within the account')
     parser.add_argument('--profile',required=False,default=None,help='AWS profile to set as default')
+    parser.add_argument('--env', default=False, action='store_true', help='Print bash environment variables instead of overwriting default profile')
     parser.add_argument('command',default=None,help='Command to run [assume|revert] (note: revert removes all aws_session_token entries')
     
     args = parser.parse_args()
@@ -69,8 +81,10 @@ if __name__ == '__main__':
             print(f'[x] Command \'assume\' requires a specified role arn (--role)')
             parser.print_usage()
         ext_id = getpass.getpass('External Id >> ') if (args.external_id) else None
-        creds = assume_role(args.role, ext_id)
-        configure_default_profile(creds)
+        res = assume_role(args.role, ext_id)
+
+        if (args.env): print_env_variables(res)
+        else: configure_default_profile(res)
     elif (args.command == 'revert'):
         if not args.profile:
             print(f'[x] Command \'revert\' requires a profile name (--profile)')
